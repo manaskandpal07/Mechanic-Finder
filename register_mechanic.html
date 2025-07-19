@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .registration-header {
+        background: linear-gradient(to right, #ff00f2, #00bfff);
+        color: white;
+        padding: 50px 0;
+        text-align: center;
+        border-radius: 0 0 20px 20px;
+    }
+
+    .form-section {
+        background: #9d9c9d;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-section h3 {
+        margin-bottom: 30px;
+    }
+
+    .form-label {
+        font-weight: 500;
+    }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+    }
+</style>
+
+<!-- 🔧 Page Header -->
+<div class="registration-header">
+    <h1 class="display-5">👨‍🔧 Register as a Mechanic</h1>
+    <p class="lead">Join our network and help users find reliable vehicle repair services!</p>
+</div>
+
+<!-- 📝 Registration Form -->
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 form-section">
+            <h3 class="text-center">Mechanic Details</h3>
+            <form method="POST" onsubmit="return validateMechanicForm()">
+                <div class="mb-3">
+                    <label for="name" class="form-label">👤 Full Name</label>
+                    <input type="text" class="form-control" name="name" required minlength="3">
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">📞 Phone Number</label>
+                    <input type="tel" class="form-control" name="phone" required pattern="[0-9]{10}" title="Enter a 10-digit phone number">
+                </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label">📍 Shop Location</label>
+                    <input type="text" class="form-control" name="location" placeholder="City, Area" required>
+                </div>
+                <div class="mb-3">
+                    <label for="latitude" class="form-label">🧭 Latitude</label>
+                    <input type="text" class="form-control" name="latitude" required>
+                </div>
+                <div class="mb-3">
+                    <label for="longitude" class="form-label">🧭 Longitude</label>
+                    <input type="text" class="form-control" name="longitude" required>
+                </div>
+                <div class="mb-3">
+                    <label for="services" class="form-label">🛠️ Services Offered</label>
+                    <textarea class="form-control" name="services" rows="3" required minlength="5"></textarea>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ JavaScript Validation -->
+<script>
+function validateMechanicForm() {
+    const lat = parseFloat(document.querySelector('input[name="latitude"]').value);
+    const lng = parseFloat(document.querySelector('input[name="longitude"]').value);
+    const phone = document.querySelector('input[name="phone"]').value.trim();
+
+    if (isNaN(lat) || lat < -90 || lat > 90) {
+        alert("❌ Latitude must be a number between -90 and 90.");
+        return false;
+    }
+
+    if (isNaN(lng) || lng < -180 || lng > 180) {
+        alert("❌ Longitude must be a number between -180 and 180.");
+        return false;
+    }
+
+    if (!/^\d{10}$/.test(phone)) {
+        alert("❌ Please enter a valid 10-digit phone number.");
+        return false;
+    }
+
+    return true;
+}
+</script>
+{% endblock %}

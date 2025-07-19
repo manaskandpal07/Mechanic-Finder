@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .contact-header {
+        background: linear-gradient(to right, #6f42c1, #20c997);
+        color: white;
+        padding: 60px 0;
+        text-align: center;
+        border-radius: 0 0 25px 25px;
+    }
+
+    .contact-section {
+        background: #fff;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        margin-top: -40px;
+        z-index: 10;
+        position: relative;
+    }
+
+    .form-label {
+        font-weight: 600;
+    }
+
+    .form-control {
+        border-radius: 8px;
+    }
+
+    .contact-image-placeholder {
+        background-color: #eaeaea;
+        border-radius: 10px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: #888;
+        padding: 20px;
+    }
+</style>
+
+<!-- 📩 Contact Page Header -->
+<div class="contact-header">
+    <h1>📬 Contact Us</h1>
+    <p class="lead">Have questions, feedback, or need support? We’re here to help!</p>
+</div>
+
+<!-- 📝 Contact Form Section -->
+<div class="container">
+    <!-- ✅ Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show mt-4" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="row justify-content-center contact-section">
+        <div class="col-md-6">
+            <form method="POST" onsubmit="return validateContactForm();">
+                <div class="mb-3">
+                    <label for="name" class="form-label">👤 Your Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">📧 Your Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="message" class="form-label">💬 Your Message</label>
+                    <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-success btn-lg">Send Message</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-5 d-none d-md-block">
+            <!-- 🖼️ Image Placeholder -->
+            <div class="contact-image-placeholder">
+                Image Placeholder for Support Illustration or Mechanic Visual
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Client-side Validation Script -->
+<script>
+    function validateContactForm() {
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const message = document.getElementById("message").value.trim();
+
+        if (name.length < 2) {
+            alert("Name must be at least 2 characters.");
+            return false;
+        }
+
+        const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert("Please enter a valid email address.");
+            return false;
+        }
+
+        if (message.length < 5) {
+            alert("Message must be at least 5 characters.");
+            return false;
+        }
+
+        return true;
+    }
+</script>
+{% endblock %}

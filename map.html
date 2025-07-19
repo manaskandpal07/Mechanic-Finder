@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mechanic Finder - Live Map & Search</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #1e1e1e;
+      padding: 15px;
+      color: white;
+      text-align: center;
+    }
+
+    #search-box {
+      margin: 10px auto;
+      max-width: 400px;
+      display: flex;
+      justify-content: center;
+      padding: 0 10px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 100%;
+      border-radius: 4px;
+      border: 1px solid #aaa;
+      font-size: 16px;
+    }
+
+    #map {
+      height: 85vh;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Mechanic Finder - Map Search</h2>
+  </header>
+
+  <div id="search-box">
+    <input id="location-input" type="text" placeholder="Enter a location...">
+  </div>
+
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    let map = L.map('map').setView([20.5937, 78.9629], 5); // Default center: India
+    let markers = [];
+
+    // Add tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Try to use live location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        map.setView([lat, lng], 13);
+
+        L.marker([lat, lng], {
+          icon: L.icon({
+            iconUrl: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+            iconSize: [25, 41],
+            iconAnchor: [12, 41]
+          })
+        }).addTo(map).bindPopup("You are here").openPopup();
+
+        fetchMechanics(lat, lng);
+      });
+    }
+
+    // Location Search by text
+    document.getElementById("location-input").addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        const query = e.target.value;
+        if (!query) return;
+
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.length > 0) {
+              const lat = parseFloat(data[0].lat);
+              const lon = parseFloat(data[0].lon);
+              map.setView([lat, lon], 13);
+              fetchMechanics(lat, lon);
+            } else {
+              alert("Location not found.");
+            }
+          });
+      }
+    });
+
+    function fetchMechanics(lat, lng) {
+      fetch(`/api/mechanics?lat=${lat}&lng=${lng}`)
+        .then(res => res.json())
+        .then(data => {
+          clearMarkers();
+          data.forEach(m => {
+            if (m.latitude && m.longitude) {
+              const marker = L.marker([m.latitude, m.longitude]).addTo(map);
+              marker.bindPopup(`<strong>${m.name}</strong><br>${m.location}<br>📞 ${m.phone}`);
+              markers.push(marker);
+            }
+          });
+        });
+    }
+
+    function clearMarkers() {
+      markers.forEach(marker => map.removeLayer(marker));
+      markers = [];
+    }
+  </script>
+</body>
+</html>

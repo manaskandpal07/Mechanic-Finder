@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary">About Mechanic Finder</h2>
+    
+    <p>
+        <strong>Mechanic Finder</strong> is a smart and easy-to-use platform that helps you locate nearby and verified car or bike mechanics based on your current location.
+        Whether you're stuck with a flat tire, need a quick oil change, or require emergency repairs, we've got you covered.
+    </p>
+    
+    <p>
+        Our mission is to make mechanic services more accessible, especially during emergencies. With the help of modern tools like GPS, Google Maps, and real-time data, 
+        we ensure you can find help fast and easily.
+    </p>
+    
+    <p>
+        We are continuously working to add more verified mechanics, expand our services to new regions, and make the experience smoother for users like you.
+    </p>
+
+    <p class="text-muted">
+        Your feedback is always welcome — feel free to <a href="{{ url_for('contact') }}">Contact Us</a> if you have suggestions or questions.
+    </p>
+</div>
+{% endblock %}

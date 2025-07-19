@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #f2f6fa;
+    }
+
+    .page-header {
+        background: linear-gradient(to right, #ff00f2, #00c6ff);
+        color: white;
+        padding: 60px 0;
+        text-align: center;
+        border-radius: 0 0 20px 20px;
+    }
+
+    #map {
+        border: 2px solid #cc00ff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+
+    .mechanic-card .card {
+        border: none;
+        border-radius: 10px;
+        transition: transform 0.2s;
+    }
+
+    .mechanic-card .card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .mechanic-card img {
+        height: 180px;
+        object-fit: cover;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+</style>
+
+<!-- 🔵 Page Title -->
+<div class="page-header">
+    <h1 class="display-5 fw-bold">🔧 Find Nearby Mechanics</h1>
+    <p class="lead">Search by location or use your current location to find reliable mechanics near you.</p>
+</div>
+
+<!-- 🔍 Search Section -->
+<div class="container mt-5">
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-8">
+            <div class="input-group shadow">
+                <input type="text" id="locationInput" class="form-control form-control-lg" placeholder="Enter your city, area or pin code">
+                <button class="btn btn-primary btn-lg" onclick="searchByText()">Search</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📍 Use My Location Button -->
+    <div class="text-center mb-5">
+        <button class="btn btn-success btn-lg px-4" onclick="searchByLocation()">📍 Use My Location</button>
+    </div>
+
+    <!-- 🗺️ Map Display -->
+    <div id="map" class="mb-5" style="height: 400px;"></div>
+
+    <!-- 🧰 Mechanic Cards -->
+    <h3 class="text-center mb-4">👨‍🔧 Mechanics Found</h3>
+    <div class="row mechanic-card" id="mechanicResults">
+        <!-- Cards inserted via JavaScript -->
+    </div>
+</div>
+
+<!-- 🧭 Leaflet Map Resources -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    let map = L.map('map').setView([28.6139, 77.2090], 12); // Default: Delhi
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    function searchByLocation() {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            updateMapAndFetch(lat, lng);
+        }, function() {
+            alert("Location access denied or unavailable.");
+        });
+    }
+
+    function searchByText() {
+        const query = document.getElementById("locationInput").value;
+        if (!query) return alert("Please enter a location.");
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+                    updateMapAndFetch(lat, lon);
+                } else {
+                    alert("Location not found.");
+                }
+            });
+    }
+
+    function updateMapAndFetch(lat, lng) {
+        map.setView([lat, lng], 14);
+        L.marker([lat, lng]).addTo(map).bindPopup("📍 You are here").openPopup();
+
+        fetch(`/api/mechanics?lat=${lat}&lng=${lng}`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("mechanicResults").innerHTML = "";
+                data.forEach(m => {
+                    if (m.latitude && m.longitude) {
+                        L.marker([m.latitude, m.longitude])
+                            .addTo(map)
+                            .bindPopup(`<strong>${m.name}</strong><br>${m.services}<br>${m.phone}`);
+
+                        const card = `
+                            <div class="col-md-4 mb-4">
+                                <div class="card shadow">
+                                    <!-- Placeholder for mechanic image -->
+                                    <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" class="card-img-top" alt="Mechanic Photo">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${m.name}</h5>
+                                        <p class="card-text"><strong>Services:</strong> ${m.services}</p>
+                                        <p class="card-text"><strong>Location:</strong> ${m.location}</p>
+                                        <p class="card-text"><strong>Phone:</strong> ${m.phone}</p>
+                                        ${m.distance_km ? `<p class="text-muted">~${m.distance_km} km away</p>` : ""}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        document.getElementById("mechanicResults").insertAdjacentHTML("beforeend", card);
+                    }
+                });
+            });
+    }
+</script>
+{% endblock %}

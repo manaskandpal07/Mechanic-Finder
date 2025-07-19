@@ -1,0 +1,38 @@
+<!-- templates/mechanic_list.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mechanic List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h2>Registered Mechanics</h2>
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Location</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mechanic in mechanics %}
+            <tr>
+                <td>{{ mechanic.id }}</td>
+                <td>{{ mechanic.name }}</td>
+                <td>{{ mechanic.phone }}</td>
+                <td>{{ mechanic.location }}</td>
+                <td>{{ mechanic.latitude }}</td>
+                <td>{{ mechanic.longitude }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <a href="{{ url_for('home') }}">← Back to Home</a>
+</body>
+</html>

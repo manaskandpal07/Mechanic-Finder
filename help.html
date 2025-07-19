@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Need Help?</h2>
+    <p>If you're facing any issues or have questions about Mechanic Finder, we're here to help!</p>
+
+    <ul>
+        <li>For technical issues, contact our support team.</li>
+        <li>For feedback and suggestions, visit the <a href="{{ url_for('contact') }}">Contact Page</a>.</li>
+        <li>To learn more about our services, check out the <a href="{{ url_for('about') }}">About Page</a>.</li>
+    </ul>
+</div>
+{% endblock %}

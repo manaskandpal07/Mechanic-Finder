@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #007bff, #6610f2);
+        color: white;
+        padding: 50px 0;
+        text-align: center;
+        border-radius: 0 0 30px 30px;
+    }
+
+    .dashboard-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+        transition: 0.3s ease-in-out;
+    }
+
+    .dashboard-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .dashboard-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        color: #6610f2;
+    }
+
+    .admin-section {
+        padding: 40px 0;
+    }
+</style>
+
+<!-- 🎛️ Admin Dashboard Header -->
+<div class="dashboard-header">
+    <h1>🛠️ Admin Dashboard</h1>
+    <p class="lead">Welcome Admin! Manage mechanics and user messages here.</p>
+</div>
+
+<!-- 📦 Dashboard Content -->
+<div class="container admin-section">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="dashboard-card text-center">
+                <div class="dashboard-icon">👨‍🔧</div>
+                <h4>Manage Mechanics</h4>
+                <p>View, add, update or remove mechanic listings.</p>
+                <a href="/admin/mechanics" class="btn btn-outline-primary mt-3">Go</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-card text-center">
+                <div class="dashboard-icon">📨</div>
+                <h4>View Messages</h4>
+                <p>See contact messages submitted by users.</p>
+                <a href="/admin/messages" class="btn btn-outline-success mt-3">Go</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-card text-center">
+                <div class="dashboard-icon">🚪</div>
+                <h4>Logout</h4>
+                <p>Log out of your admin session safely.</p>
+                <a href="/admin/logout" class="btn btn-outline-danger mt-3">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
